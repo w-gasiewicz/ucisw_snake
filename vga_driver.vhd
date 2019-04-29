@@ -29,26 +29,26 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity vga_driver is
     Port ( CLK : in  STD_LOGIC;
-			  X : in  STD_LOGIC_VECTOR (8 downto 0);
-			  Y : in  STD_LOGIC_VECTOR (8 downto 0);
+			  X : out  STD_LOGIC_VECTOR (8 downto 0);
+			  Y : out  STD_LOGIC_VECTOR (8 downto 0);
+           R : in STD_LOGIC;
            H_SYNC : out  STD_LOGIC;
-           V_SYNC : out  STD_LOGIC;
-           RGB : out  STD_LOGIC_VECTOR (2 downto 0));
+           V_SYNC : out  STD_LOGIC);
 end vga_driver;
 
 architecture Behavioral of vga_driver is
 	
 	-- Horizontal timing constants:
 	constant HD : integer := 799;		-- Display size 800X600 (799x599 counting from 0)
-	constant HFP : integer := 53;		-- Horizontal Front Porch (right border)
+	constant HFP : integer := 56;		-- Horizontal Front Porch (right border)
 	constant HSP : integer := 120;		-- Horizontal Sync Pulse (Retrace)
-	constant HBP : integer := 61;		-- Horizontal Back Porch (left border)
+	constant HBP : integer := 64;		-- Horizontal Back Porch (left border)
 	
 	-- Vertical timing constants:
 	constant VD : integer := 599;		
-	constant VFP : integer := 35;		-- Vertical Front Porch
+	constant VFP : integer := 37;		-- Vertical Front Porch
 	constant VSP : integer := 6;		-- Vertical Sync Pulse
-	constant VBP : integer := 21;		-- Vertical Back Porch;
+	constant VBP : integer := 23;		-- Vertical Back Porch;
 	
 	signal h_pos : integer := 0;
 	signal v_pos : integer := 0;
@@ -142,17 +142,10 @@ end process;
 
 draw:process(CLK, R, h_pos, v_pos, video_on)
 begin
-	if(R = '1') then
-		RGB <= "000";
-	elsif(CLK'event AND CLK = '1') then
+	if(CLK'event AND CLK = '1') then
 		if(video_on = '1') then
-			if((h_pos >= 9 AND h_pos <= 159) AND (v_pos >= 9 AND h_pos <= 159)) then
-				RGB <= "111";
-			else
-				RGB <= "000";
-			end if;
-		else
-			RGB <= "000";
+			X <= std_logic_vector(to_unsigned(h_pos, X'length));
+			Y <= std_logic_vector(to_unsigned(v_pos, Y'length));
 		end if;
 	end if;
 end process;
