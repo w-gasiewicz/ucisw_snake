@@ -29,8 +29,10 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity vga_driver is
     Port ( CLK : in  STD_LOGIC;
-			  X : out  STD_LOGIC_VECTOR (8 downto 0);
-			  Y : out  STD_LOGIC_VECTOR (8 downto 0);
+           D : in STD_LOGIC;
+			  X : out  STD_LOGIC_VECTOR (11 downto 0);
+			  Y : out  STD_LOGIC_VECTOR (11 downto 0);
+           RGB: out STD_LOGIC_VECTOR (2 downto 0);
            R : in STD_LOGIC;
            H_SYNC : out  STD_LOGIC;
            V_SYNC : out  STD_LOGIC);
@@ -146,6 +148,13 @@ begin
 		if(video_on = '1') then
 			X <= std_logic_vector(to_unsigned(h_pos, X'length));
 			Y <= std_logic_vector(to_unsigned(v_pos, Y'length));
+         if(D = '1') then
+            RGB <= "111";
+         else
+            RGB <= "000";
+         end if;
+      else
+         RGB <= "000";
 		end if;
 	end if;
 end process;
