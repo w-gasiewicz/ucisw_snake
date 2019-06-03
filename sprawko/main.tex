@@ -1,0 +1,203 @@
+\documentclass[12pt]{article}
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{tikz}
+\tikzset{
+  heap/.style={
+    every node/.style={shape=rectangle,rounded corners, draw},
+    level 1/.style={sibling distance=30mm},
+    level 2/.style={sibling distance=10mm}
+  }
+}
+\usepackage{blkarray, bigstrut}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[left=2cm,top=3cm,right=2cm,bottom=3cm,bindingoffset=0.5cm]{geometry}
+\usepackage{multicol}
+\usepackage{afterpage}
+\usepackage{array}
+\usepackage{pgfplots}
+\usepackage{titlesec}
+\usepackage{listings}
+\lstset{
+	showstringspaces=false
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+  escapeinside={(*@}{@*)},
+}
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+\usepackage{fancyhdr} % Headers and footers
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{dirtree}
+\usepackage{caption}
+\usepackage[section]{placeins}
+\usepackage{amsfonts}
+\captionsetup[figure]{font=small,labelfont=small}
+\captionsetup[table]{font=small,labelfont=small}
+
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \addtocounter{page}{-1}%
+    \newpage}
+    
+\pgfplotsset{compat=1.16}
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+\setlength{\marginparwidth}{2cm}
+ 
+\titleformat
+{\section} % command
+[display] % shape
+{\bfseries\LARGE} % format
+{} % label
+{0.5ex} % sep
+{
+} % before-code
+[
+\vspace{-0.5ex}%
+\rule{\textwidth}{0.3pt}
+] % after-code
+
+\begin{document}
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+\vspace*{\fill}
+%----------------------------------------------------------------------------------------
+%   HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+\textsc{\LARGE Politechnika Wrocławska}\\[0.5cm] % Name of your university/college
+\textsc{\Large Wydział Elektroniki}\\[1.5cm] % Major heading such as course name
+\textsc{\large Układy Cyfrowe i Systemy Wbudowane 2}\\[0.5cm] % Minor heading such as course title
+
+%----------------------------------------------------------------------------------------
+%   TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.1cm]
+{ \Huge Raport z projektu\\\vspace{10pt}Gra snake}\\[0.1cm] % Title of your document
+\HRule \\[1.5cm]
+ 
+%----------------------------------------------------------------------------------------
+%   AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}{0.3\textwidth}
+\begin{flushleft} \large
+\textit{Autorzy:}\\
+Krystian Plata\\
+Wojciech Gąsiewicz\\
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.2\textwidth}
+\begin{flushleft}\large
+\vspace{\baselineskip}
+236250\\
+235086\\
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Prowadzący:} \\
+Dr inż. Dariusz Banasiak\\ % Supervisor's Name
+\end{flushright}
+\end{minipage}\\
+
+% If you don't want a supervisor, uncomment the two lines below and remove the section above
+%\Large \emph{Author:}\\
+%John \textsc{Smith}\\[3cm] % Your name
+
+%----------------------------------------------------------------------------------------
+%   DATE SECTION
+%----------------------------------------------------------------------------------------
+\vspace*{\fill}
+
+
+{\large \today}\\[2cm] % Date, change the \today to a set date if you want to be precise
+
+% \vfill % Fill the rest of the page with whitespace
+\end{titlepage}
+\newpage
+\tableofcontents
+\clearpage
+\section{Wstęp}
+\subsection{Cel projektu}
+Celem projektu było zaimplementowanie popularnej gry snake przy wykorzystaniu 
+układu Spartan-3E. Wizualizacja została zrealizowana przy użyciu monitora VGA. 
+Do strowania grą została wykorzystana dostępna w laboratorium klawiatura wyposażona w 
+złącze PS2. W grze zotały wykorzystane moduły dostępne na stronie laboratorium oraz własne.
+\subsection{Zasady gry}
+Podczas rozgrywki użytkownik decyduje o tym w którym kierunku uda się wąż. 
+Sterowanie odbywa się poprzez klawisze W,A,S,D.
+\begin{itemize}
+\item W - ruch w górę.
+\item A - ruch w lewo.
+\item S - ruch w dół.
+\item D - ruch w prawo.
+\end{itemize}
+Ruchy są ograniczone tak, że niemożliwe jest cofnięcie się w tej samej osi ruchu.
+Wąż przesuwa się zgodnie z aktualnym torem o jedną jednostkę, co ustalony okres czasu.
+W trakcie działania gry, generowana jest losowa pozycja pożywienia. 
+Zjedzenie pożywienia przez węża skutkuje wzrostem jego długości o jedną jednostkę.
+Warunkiem końca gry jest uderzenie wężem w ramkę na ekranie.
+\subsection{Zadania i harmonogram}
+W początkowym etapie projektowania określono zadania, które należało wykonać 
+na odpowiednich zajęciach:
+\begin{enumerate}
+    \item Obsługa monitora - implementacja modułu obsługującego sygnały ze standardu VGA.
+    \item Implementacja modułu odpowiedzialnego za obsługę klawiatury.
+    \item Fizyka węża - implementacja modułu, który powoduje ruch węża zgodny z regułami. 
+    \item Implementacja warunków ograniczających.
+    \item Implementacja procesów odpowiedzialnych za generowanie pokarmu.
+    \item Implementacja procesów odpowiedzialnych za wydłużanie węża po zjedzeniu pokarmu.
+\end{enumerate}
+\subsection{Wykorzystany sprzęt oraz technologie}
+Do implementacji gry wykorzystany został język opisu sprzętu VHDL. Stanowiska laboratoryjne, 
+na których przebiegała implementacja były wyposażone w oprogramowanie Xilinx ISE. 
+Środowisko to było niezbędne podczas kompilacji programu pod sprzęt wykorzystany 
+do jego obsługi (Xilinx Spartan 3E Starter). 
+\subsection{Spis modułów}
+\textbf{Moduły gotowe:}
+\begin{itemize}
+    \item PS2-Kbd – Obsługuje komunikację z klawiaturą podpiętą przez złącze PS2.
+\end{itemize}
+\textbf{Moduły autorskie:}
+\begin{itemize}
+    \item \textbf{VGADriver} – Przechowuje pozycję aktualnego piksela zgodnie z ustaloną 
+    synchronizacją.
+    \item \textbf{KbdDir} – Zamienia informację wejściową w postaci kodu klawisza,
+     na informację o kierunku węża.
+    \item \textbf{Snake} – Przechowuje aktualne współrzędne snake, zmienia je z 
+    określoną częstotliwością oraz zwraca informację, o kolorze przetwarzanego piksela.
+\end{itemize}
+\subsection{Hierarchia plików źródłowych}
+Głównym plikiem projektu, na podstawie którego była przeprowadzana synteza był schemat modułów.
+Hierarchię plików w początkowej fazie projektu zamieszczono poniżej:
+\dirtree{%
+.1 snake\_schematic.sch.
+.2 VGADriver.vhd.
+.2 KbdDir.vhd.
+.2 Snake.vhd.
+.2 GenIO.ucf.
+.2 PS2Kbd.ngc.
+}
+\clearpage
+\section{Schemat projektu}
+\newpage
+\section{Moduł PS2\_Kbd}
+\section{Moduł VGADriver}
+\section{Moduł KbdDir}
+\section{Moduł Snake}
+\section{Wnioski}
+\end{document}
